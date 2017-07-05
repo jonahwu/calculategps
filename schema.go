@@ -28,6 +28,9 @@ type UserGpsInfo struct {
 	CreateLoc Gps4dLoc
 }
 
+//shall we need CreatedTargetCameraLoc ? Yes I think we need, it had better we define a target range ~500m, over 500m will regenerate new targets
+//what's means 500m, it shoud related to car speed to sec
+
 // initial get fake data and timestamp
 //filter
 // MapDistanceFilter (createLoc and CurrentLoc) distance
