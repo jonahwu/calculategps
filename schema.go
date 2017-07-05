@@ -28,6 +28,7 @@ type UserGpsInfo struct {
 	CreateLoc Gps4dLoc
 }
 
+// initial get fake data and timestamp
 //filter
 // MapDistanceFilter (createLoc and CurrentLoc) distance
 // MapTimeFilter (createLoc and CurrentLoc) with time
@@ -35,7 +36,7 @@ type UserGpsInfo struct {
 // approach Filter (TargetCameraLoc and CurrentLoc, and PrevLoc) to make sure it's getting closed
 // orientation Filter
 // return target, distance, (arround, near, passed)
-// UpdateFilter (CurrentLoc to PrevLoc if >5sec) // so we need at least 5 sec to detect camera
+// UpdateFilter (CurrentLoc to PrevLoc if >5sec), in the beginning we just check Prev is zero and put current loc there.
 
 func main() {
 	a := Gps4dLoc{}
@@ -55,6 +56,10 @@ func main() {
 		fmt.Println("shoelati", ugi.CameraLoc.Loc[0].Lati)
 	} else {
 		fmt.Println("shoelati", ugi.CameraLoc.Loc[0].Lati)
+	}
+
+	if ugi.CreateLoc.Timestamp == 0 {
+		fmt.Println("create loc is nil")
 	}
 
 }
