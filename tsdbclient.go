@@ -15,7 +15,7 @@ import (
 
 var tmpgettsdb string
 
-func FromStringToList(locx string) []float64 {
+func FromStringToList(locx string) ([]float64, []int) {
 	c := make(map[string]interface{})
 	e := json.Unmarshal([]byte(locx), &c)
 	if e != nil {
@@ -46,7 +46,7 @@ func FromStringToList(locx string) []float64 {
 		fmt.Println(fv)
 		pos = append(pos, fv)
 	}
-	return pos
+	return pos, k
 
 }
 
@@ -102,7 +102,7 @@ func CurlCommand(remoteip string, remoteport string, tmpgettsdb string) string {
 	return out.String()
 }
 
-func GetTSDBData() ([]float64, []float64) {
+func GetTSDBData() ([]float64, []float64, []int) {
 	tmpgettsdb = `{
     "start": 1435716526,
     "queries": [
@@ -121,17 +121,18 @@ func GetTSDBData() ([]float64, []float64) {
 	fmt.Println(loc)
 	locx := gjson.Get(loc, "0.dps").String()
 	locy := gjson.Get(loc, "1.dps").String()
-	posx := FromStringToList(locx)
-	posy := FromStringToList(locy)
+	posx, ts := FromStringToList(locx)
+	posy, ts := FromStringToList(locy)
 	fmt.Println("result ---------------------")
 	fmt.Println(posx)
 	fmt.Println(posy)
+	fmt.Println(ts)
 	if len(posx) != len(posy) {
 		fmt.Println("length of two data is different")
 	} else {
 		fmt.Println("length of two data is the same")
 	}
-	return posx, posy
+	return posx, posy, ts
 }
 
 func CalDistance(long1 float64, lati1 float64, long2 float64, lati2 float64) float64 {
@@ -145,24 +146,25 @@ func CalDistance(long1 float64, lati1 float64, long2 float64, lati2 float64) flo
 	return d * 1000.
 
 }
-func CalGPSDistance(posx []float64, posy []float64) {
+func CalGPSDistance(posx []float64, posy []float64, ts []int) {
 	tarx := 25.080223
 	tary := 121.697908
 	fmt.Println("---------------------------------")
 	for i := 0; i < len(posx); i++ {
 		gpsx := posx[i]
 		gpsy := posy[i]
+		tss := ts[i]
 		dist := CalDistance(gpsy, gpsx, tary, tarx)
-		fmt.Println(dist, gpsx, gpsy, tarx, tary)
+		fmt.Println(dist, tss, gpsx, gpsy, tarx, tary)
 		time.Sleep(2 * time.Second)
 	}
 }
 
 func main() {
 	//25.080223, 121.697908
-	posx, posy := GetTSDBData()
+	posx, posy, ts := GetTSDBData()
 	fmt.Println(posx)
 	fmt.Println(posy)
-	CalGPSDistance(posx, posy)
+	CalGPSDistance(posx, posy, ts)
 
 }
