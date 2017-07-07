@@ -5,8 +5,10 @@ import (
 	//"net/http"
 	"bytes"
 	"encoding/json"
+	"flag"
 	"github.com/tidwall/gjson"
 	"math"
+	"os"
 	"os/exec"
 	"sort"
 	"strconv"
@@ -160,11 +162,37 @@ func CalGPSDistance(posx []float64, posy []float64, ts []int) {
 	}
 }
 
+var runtype string
+
 func main() {
 	//25.080223, 121.697908
-	posx, posy, ts := GetTSDBData()
-	fmt.Println(posx)
-	fmt.Println(posy)
-	CalGPSDistance(posx, posy, ts)
+	flag.StringVar(&runtype, "runtype", "", "runingtype:container, mongo")
+	flag.Parse()
+
+	switch runtype {
+	case "normal":
+		posx, posy, ts := GetTSDBData()
+		fmt.Println(posx)
+		fmt.Println(posy)
+		CalGPSDistance(posx, posy, ts)
+	case "store":
+		fmt.Println("now let's store data")
+		posx, posy, ts := GetTSDBData()
+		file, err := os.Create("text.txt")
+		if err != nil {
+			return
+		}
+		defer file.Close()
+		for i := 0; i < len(posx); i++ {
+			a := posx[i]
+			b := posy[i]
+			t := ts[i]
+			//file.WriteString("test\nhello")
+			file.WriteString(fmt.Sprintf("%f   %f   %d \n", a, b, t))
+		}
+
+	default:
+		fmt.Println("notheing input")
+	}
 
 }
