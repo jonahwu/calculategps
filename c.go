@@ -40,4 +40,10 @@ func main() {
 	long2 := -121.693604
 	dist := CalDistance(long1, lati1, long2, lati2)
 	fmt.Println(dist)
+
+	testlati := 25.065805435180664
+	testlong := 121.67511749267578
+	tarlati := 25.06611442565918
+	tarlong := 121.67586517333984
+	fmt.Println(CalDistance(testlong, testlati, tarlong, tarlati))
 }
